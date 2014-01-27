@@ -1,31 +1,35 @@
 do (
-  React = require 'react'
-  Jumbotron = require './jumbotron/jumbotron'
+  React = require 'react/addons'
+  Header = require './header'
+  httpinvoke = require 'httpinvoke'
 ) ->
 
   {img, h1, a, p, pre} = React.DOM
 
   UI = React.createClass
+
+    getInitialState: ->
+      serverBase: 'http://10.255.255.20:9080/maxrest/rest/'
+      userName: ''
+      password: ''
+      verifyState: 'unknown'
+
+    verifyConnection: (serverBase, userName, password) ->
+      auth = btoa "#{userName}:#{password}"
+      (httpinvoke @state.serverBase, 'GET')
+        .then (results) ->
+          console.warn results
+         , (error) ->
+          console.error error
+
+      false
+
     render: ->
-      Jumbotron fullWidth: false,
-        h1 {},
-          'Ready...'
-        p {},
-          a href: 'test.html', className: 'btn btn-primary btn-lg', role: 'button',
-            'Mocha Tests'
-        p {},
-          'Change your git remote with'
-        pre {},
-          'git remote set-url origin https://github.com/DataSplice/<your-project>'
-        p {},
-          'Main gulp tasks'
-        pre {},
-          """
-          gulp                        # defaults to [clean, build]
-          gulp clean                  # deletes build dir
-          gulp test                   # runs nyancat in the console
-          gulp build  [--production]  # builds src and test code, [--production] flag minifies js/css files in build/dist
-          gulp server [--open]        # starts dev server, [--open] flag opens your browser automatically
-          """
+      Header
+        serverBase: @state.serverBase
+        userName: @state.userName
+        password: @state.password
+        verifyState: 'unknown'
+        verifyConnection: @verifyConnection
 
   module.exports = UI
