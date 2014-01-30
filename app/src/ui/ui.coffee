@@ -4,7 +4,7 @@ do (
   httpinvoke = require 'httpinvoke'
 ) ->
 
-  {img, h1, a, p, pre} = React.DOM
+  {div, span, img, h1, a, p, pre} = React.DOM
 
   UI = React.createClass
 

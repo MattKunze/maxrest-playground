@@ -31,6 +31,23 @@ browserifyOptions =
   transform: ['caching-coffeeify']
   extensions: ['.coffee']   # extension to skip when calling require()
 
+vendorAssets = [
+  {
+    name: 'normalize-css'
+    base: './bower_components/normalize-css'
+    assets: [
+      { src: 'normalize.css', dest: '' }
+    ]
+  }
+  {
+    name: 'glyphicons'
+    base: './bower_components/bootstrap-sass/fonts'
+    assets: [
+      { src: '*.*', dest: 'fonts', shared: true }
+    ]
+  }
+]
+
 app = fileset './app'
 build = './build'
 dist = fileset "#{build}/dist"
@@ -38,6 +55,9 @@ test = fileset "#{build}/test"
 port = 3000
 # allow to connect from anywhere
 hostname = null
+# change this to something unique if you want to run multiple projects
+# side-by-side
+lrPort = gutil.env.lrport or 35729
 
 # Starts the webserver
 gulp.task 'webserver', ->
@@ -98,7 +118,7 @@ gulp.task 'styles', ->
 gulp.task 'html', ->
   (gulp.src "#{app.base}/index.html")
     # embeds the live reload script
-    .pipe(if gutil.env.production then gutil.noop() else embedlr())
+    .pipe(if gutil.env.production then gutil.noop() else embedlr port: lrPort)
     .pipe(gulp.dest "#{dist.base}")
     .pipe(refresh server)
 
@@ -111,14 +131,15 @@ gulp.task 'test-html', ->
     .pipe(refresh server)
 
 gulp.task 'livereload', ->
-  server.listen 35729, (err) ->
+  server.listen lrPort, (err) ->
     return (console.log err) if err
 
 # Watches files for changes
 gulp.task 'watch', ->
   gulp.watch "#{app.images}/**", ['images']
   gulp.watch "#{app.scripts}/**", ['scripts', 'test-scripts']
-  gulp.watch "#{app.styles}/**", ['styles', 'test-styles']
+  gulp.watch "#{app.scripts}/**/*.scss", ['styles']
+  gulp.watch "#{app.styles}/**", ['styles']
   gulp.watch "#{app.base}/index.html", ['html']
   gulp.watch "#{app.base}/test.html", ['test-html']
 
@@ -132,8 +153,25 @@ gulp.task 'clean', ->
   (gulp.src "#{build}", read: false)
     .pipe(clean force: true)
 
-gulp.task 'build-dist', ['html', 'images', 'styles', 'scripts']
+gulp.task 'build-dist', ['build-vendor', 'html', 'images', 'styles', 'scripts']
 gulp.task 'build-test', ['test-html', 'test-styles', 'test-scripts']
+
+# Grabs assets from vendors and puts in build/dist/vendor
+# TODO: this doesn't seem very coffeescriptish
+gulp.task 'build-vendor', ->
+  cyan = gutil.colors.cyan
+  for vendor in vendorAssets
+    gutil.log "Building vendor #{cyan vendor.base}"
+    for asset in vendor.assets
+      src = "#{vendor.base}/#{asset.src}"
+      # some assets assume a particular path in the file structure
+      dest = if asset.shared
+        "#{dist.base}/#{asset.dest}"
+      else
+        "#{dist.base}/vendor/#{vendor.name}/#{asset.dest}"
+      gutil.log "\tCopying #{cyan src} to #{cyan dest}"
+      (gulp.src src)
+        .pipe(gulp.dest dest)
 
 gulp.task 'test', ->
   (gulp.src "#{app.scripts}/test.coffee", read: false)
