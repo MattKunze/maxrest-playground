@@ -9,18 +9,25 @@ do (
   UI = React.createClass
 
     getInitialState: ->
-      serverBase: 'http://10.255.255.20:9080/maxrest/rest/'
+      serverBase: 'http://localhost:9081/proxy/maxrest'
       userName: ''
       password: ''
       verifyState: 'unknown'
 
     verifyConnection: (serverBase, userName, password) ->
+      @setState verifyState: 'verifying'
       auth = btoa "#{userName}:#{password}"
-      (httpinvoke @state.serverBase, 'GET')
-        .then (results) ->
+      url = "#{serverBase}:MaxAuth=#{auth}/mbo/PERSON?personid=~eq~0"
+      (httpinvoke url, 'GET')
+        .then (results) =>
           console.warn results
-         , (error) ->
+          if results.statusCode is 200
+            @setState verifyState: 'success'
+          else
+            @setState verifyState: 'error'
+         , (error) =>
           console.error error
+          @setState verifyState: 'error'
 
       false
 
@@ -29,7 +36,7 @@ do (
         serverBase: @state.serverBase
         userName: @state.userName
         password: @state.password
-        verifyState: 'unknown'
+        verifyState: @state.verifyState
         verifyConnection: @verifyConnection
 
   module.exports = UI

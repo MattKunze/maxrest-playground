@@ -19,6 +19,12 @@ do (
           @state.password
 
     render: ->
+      verifyClass = switch @props.verifyState
+        when 'verifying' then 'btn-info disabled'
+        when 'success' then 'btn-success'
+        when 'error' then 'btn-danger'
+        else 'btn-default'
+
       div className: 'navbar navbar-inverse',
         span className: 'navbar-brand', 'RESTful Maximo'
 
@@ -44,7 +50,7 @@ do (
                 valueLink: @linkState 'password'
             div className: 'form-group col-xs-1',
               a
-                className: 'btn btn-default btn-block'
+                className: "btn btn-block #{verifyClass}"
                 onClick: @verifyConnection
               , 'Verify'
 
