@@ -25,7 +25,7 @@ do (
         when 'error' then 'btn-danger'
         else 'btn-default'
 
-      div className: 'navbar navbar-inverse',
+      div className: 'header-bar navbar navbar-inverse',
         span className: 'navbar-brand', 'RESTful Maximo'
 
         div className: 'collapse navbar-collapse',
