@@ -10,7 +10,7 @@ do (
       div className: 'panel panel-danger',
         div className: 'panel-heading',
           div className: 'panel-title',
-            "Something unexpected happend: #{@props.errorCode or 'unknown'}"
+            "Something unexpected happened: #{@props.errorCode or 'unknown'}"
         div className: 'panel-body',
           @props.error
 
