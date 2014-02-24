@@ -1,9 +1,8 @@
 {
-  "name": "datasplice-seed",
+  "name": "maxrest-playground",
   "version": "0.0.1",
   "dependencies": {
-    "envify": "~0.2.0",
-    "react": "~0.8.0",
+    "react": "~0.9.0",
     "lodash": "~2.4.1",
     "async": "~0.2.10",
     "when": "~2.7.1",
@@ -31,11 +30,10 @@
     "sinon": "~1.7.3",
     "sinon-chai": "~2.4.0",
     "gulp-mocha": "~0.4.1",
-    "envify": "~0.2.0",
     "mocha": "~1.17.1",
     "caching-coffeeify": "~0.3.0",
     "coffeeify": "~0.5.2",
     "event-stream": "~3.1.0",
-    "coffee-script": "~1.7.0"
+    "coffee-script": "~1.7.1"
   }
 }
